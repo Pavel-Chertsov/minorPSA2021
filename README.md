@@ -3,10 +3,10 @@
 Лекции и семинары по временным рядам
 
 
-**Рекомендуемая литература по курсу:
+**Рекомендуемая литература по курсу:**
 
 
-***Учебники
+***Учебники***
 
 
 Магнус Я.Р., Катышев П.К., Пересецкий А.А. Эконометрика. Начальный курс.- М.: Дело, 2004. – 576 с.
@@ -48,7 +48,7 @@ Enders W. Applied Econometric Times Series. Wiley, 2009.
 Brooks C. Introductory Econometrics for Finance, 2014. (VAR, GARCH, switching models)
 
  
-***Статистические пакеты:
+***Статистические пакеты:***
 
 
 Cameron A.C., Trivedi P.K. Microeconometrics Using Stata, Stata Press – 2009.
@@ -57,10 +57,10 @@ Cameron A.C., Trivedi P.K. Microeconometrics Using Stata, Stata Press – 2009.
 Куфель Т. Эконометрика: решение задач с применением пакета программ GRETL, 2007.
 
  
- ***Справочник
+ ***Справочник***
  
  
 Кобзарь А. И. Прикладная математическая статистика. Справочник для инженеров и научных работников. — М.: Физматлит, 2006.
  
                  
-Электронные ресурсы: http://www.twirpx.com/files/financial/apvr
+***Электронные ресурсы:*** http://www.twirpx.com/files/financial/apvr

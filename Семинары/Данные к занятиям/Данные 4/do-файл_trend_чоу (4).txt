@@ -1,0 +1,162 @@
+****трендовая составляющая   
+***"C:\1\hunger.dta"
+tsset t
+tsline  Af North East Central South west
+
+**оценивание кривых роста, проверка адекватности моделей
+reg  west t
+predict y1, xb
+predict e1, residuals
+tsline  west  y1
+ac  e1
+sktest e1
+wntestq e1
+estat dwatson       
+*Obtain AIC and BIC
+estat ic
+
+
+gen t2=t^2
+reg  west t t2
+predict y2, xb
+predict e2, residuals
+tsline  west  y1 y2
+ac  e2
+sktest e2
+wntestq e2
+estat ic
+
+
+
+
+*сезонные данные: Объём авиаперевозок в ЕС (в млн. человек), январь 2010 – декабрь 2017 (Источник: данные Eurostat (avia_paoc))
+*"C:\1\EU1.dta"
+*******ежемесячные данные: число наблюдений 8 лет*12мес=96 наблюдений 
+tsset t
+tsline  eu
+tsline  eu, ytitle(Million person) title(Air traffic in EU (2010-2017))
+
+
+tssmooth ma y1 = eu, weights( 0.5 1 1 1 1 1 <1> 1 1 1 1 1 0.5)
+tsline eu y1
+ac  eu
+ac  y1
+
+runtest y1
+
+reg  y1 t
+predict y11, xb
+predict e1, residuals
+tsline  y1  y11
+estat ic
+ac  e1
+sktest e1
+wntestq e1
+
+
+
+***************************************************************
+* Тест Чоу ****
+**************************************
+*Анализ графиков, точки структурного сдвига?
+tsline wn
+tsline tr
+tsline tr1
+tsline tr2
+tsline tr3
+
+
+* Тест Чоу*******
+chowreg wn t, dum(10) type(1)
+chowreg wn t, dum(10) type(2)
+chowreg wn t, dum(10) type(3)
+
+chowreg tr t, dum(10) type(1)
+chowreg tr t, dum(10) type(2)
+chowreg tr t, dum(10) type(3)
+
+tsset t
+tsline tr1
+
+chowreg tr1 t, dum(30) type(1)
+chowreg tr1 t, dum(30) type(2)
+chowreg tr1 t, dum(30) type(3)
+
+
+* Моделирование структурного сдвига
+g t30=0
+replace t30=1 if t<=30
+
+reg tr1 t t30
+
+
+gen tt30=t*t30
+reg tr1 t t30 tt30
+predict y1, xb
+tsline  tr y1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****Дополнительно:генерирование процессов для теста Чоу
+ 
+* set seed - "нач значение случайных чисел"
+set seed 12344
+set obs 100
+egen t=fill(1 2 3)
+tsset t
+
+* создадим белый шум 
+drawnorm wn
+
+* построим график белого шума 
+tsline wn
+
+* сгенерируем линейный тренд + БШ, построим график 
+gen tr=10.1+1.2*t+wn
+tsline tr
+
+* сгенерируем линейный тренд + БШ с изменением угла наклона, построим график 
+gen tr11=10+0.2*t+wn
+replace tr11=-11+2.3*t+wn if t>50
+tsline tr11
+
+* Тест Чоу*******
+chowreg tr11 t, dum(10) type(1)
+chowreg tr11 t, dum(10) type(2)
+
+
+* сгенерируем линейный тренд + БШ со скачком в точке t=30, построим график 
+gen tr1=.
+replace tr1=0.1+0.2*t+wn if t<=30
+replace tr1=10+0.2*t+wn if t>30
+line  tr1 t
+
+* Тест Чоу*******
+chowreg tr1 t, dum(10) type(1)
+
+* сгенерируем линейный тренд + БШ со скачком в точке t=60 и изменением угла наклона основной *тенденции, построим график
+
+gen tr2=.
+replace tr2=0.1+0.2*t+wn if t<=60
+replace tr2=10+2.3*t+wn if t>60
+line  tr2 t
+
+gen tr3=10+0.2*t+wn
+replace tr3=-41+1.3*t+wn if t>50
+tsline tr3
+
+
+gen tr4=20+0.02*t2+wn
+replace tr4=-50+0.05*t2+wn if t>60
+tsline tr4

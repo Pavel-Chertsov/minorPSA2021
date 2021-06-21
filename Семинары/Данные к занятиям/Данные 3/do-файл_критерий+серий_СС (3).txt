@@ -1,0 +1,126 @@
+
+* Критерий случайности
+**********************************
+
+* расчитаем дескриптивные статистики (разные способы)
+sum gold
+summarize gold, detail
+tabstat gold, statistics( median )
+
+* сохраняем значение медианы
+summarize gold, detail
+scalar   gold_med=r(p50)
+scalar list  gold_med
+
+* строим серии для критерия серий
+gen r=.
+replace r=1 if gold>gold_med
+replace r=0 if gold<gold_med
+list r
+
+* приближенное правило
+dis 1/2*(23+2-1.96*sqrt(23-1))
+dis 1.43*ln(23+1)
+
+*Какой можно сделать вывод?
+
+****** Критерий случайности Swed and Eisenhart (1943)
+runtest  gold
+
+
+********CC******
+tsline  mort_kalm
+ac  mort_kalm
+
+
+tssmooth ma y = mort_kalm, window(6 0 6)
+tsline  mort_kalm  y
+ac  mort_kalm
+ac y
+
+
+Title     [TS] tssmooth ma -- Moving-average filter
+
+
+Syntax  
+    Moving average with uniform weights
+        tssmooth ma [type] newvar = exp [if] [in], window(#l[#c[#f]])
+                       [replace]
+
+    Moving average with specified weights
+
+        tssmooth ma [type] newvar = exp [if] [in], weights([numlist_l] <#c>
+                       [numlist_f]) [replace]
+
+    You must tsset your data before using tssmooth ma; [TS] tsset.
+    exp may contain time-series operators; see tsvarlist.
+
+
+Menu     Statistics > Time series > Smoothers/univariate forecasters >
+        Moving-average filter
+
+
+Description 
+    tssmooth ma creates a new series in which each observation is an average
+    of nearby observations in the original series.
+
+    In the first syntax, window() is required and specifies the span of the
+    filter.  tssmooth ma constructs a uniformly weighted moving average of
+    the expression.
+
+    In the second syntax, weights() is required and specifies the weights to
+    be used.  tssmooth ma then applies the specified weights to construct a
+    weighted moving average of the expression.
+
+
+Options
+
+    window(#l[#c[#f]]) describes the span of the uniformly weighted moving
+        average.
+
+        #l specifies the number of lagged terms to be included,
+        0 < #l < one-half the number of observations in the sample.
+
+        #c is optional and specifies whether to include the current
+        observation in the filter.  A 0 indicates exclusion and 1, inclusion.
+        The current observation is excluded by default.
+
+        #f is optional and specifies the number of forward terms to be
+        included, 0 < #f < one-half the number of observations in the sample.
+
+    weights([numlist_l] <#_c> [numlist_f]) is required for the weighted
+        moving average and describes the span of the moving average, as well
+        as the weights to be applied to each term in the average.  The middle
+        term literally is surrounded by < and >, so you might type
+        weights(1/2 <3> 2/1).
+
+        numlist_l is optional and specifies the weights that are to be
+        applied to the lagged terms when computing the moving average.
+
+        #_c is required and specifies the weight to be applied to the current
+        term.
+
+        numlist_f is optional and specifies the weights to be applied to the
+        forward terms when computing the moving average.
+
+        The number of elements in each numlist is limited to one-half the
+        number of observations in the sample.
+
+    replace replaces newvar if it already exists.
+
+
+Examples
+
+    Setup
+        . webuse sales1
+        . tsset
+
+    Create uniformly weighted moving average of sales using 2 lagged terms, 3
+    forward terms, and the current observation in the filter
+        . tssmooth ma sm1=sales, window(2 1 3)
+
+    Create weighted moving average of sales using 1 and 2 as the weights for
+    the lagged terms, 3 as the weight for the current term, and 2 and 1 as
+    the weights for the forward terms
+        . tssmooth ma sm2=sales, weights(1/2 <3> 2/1)
+
